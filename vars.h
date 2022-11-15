@@ -50,8 +50,8 @@ constexpr auto SNAKE_DIRECTION_RIGHT = 1;
 constexpr auto SNAKE_DIRECTION_DOWN = 2;
 constexpr auto SNAKE_DIRECTION_LEFT = 3;
 
-const static int field_size_x = 40;
-const static int field_size_y = 25;
+const static int field_size_x = 30;
+const static int field_size_y = 20;
 const static int cell_size = 32;
 const static int window_width = field_size_x * cell_size;
 const static int window_height = field_size_y * cell_size;

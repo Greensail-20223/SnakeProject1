@@ -9,6 +9,7 @@ int main() {
     srand(time(nullptr));
     sf::RenderWindow window(sf::VideoMode(window_width, window_height), "Anaconda", sf::Style::Close);
     clear_field();
+    start_game();
     while (window.isOpen()){
         game_control(window);
         update_buffer();

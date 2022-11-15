@@ -4,6 +4,12 @@
 #include <cstdlib>
 #include <vector>
 
+void start_game(){
+    game_state.last_score = game_state.score;
+    r = x; g = y; b = z;
+    game_state.speed_last = game_state.speed;
+}
+
 int get_random_empty_cell(){
     int empty_cell_count = 0;
     for (int j = 0; j < field_size_y; j++) {
@@ -56,6 +62,15 @@ void add_heart(){
     }
 }
 
+
+void add_yellow_apple(){
+    int yellow_apple_pos = get_random_empty_cell();
+    if (yellow_apple_pos != -1) {
+        game_state.field[yellow_apple_pos / field_size_x][yellow_apple_pos % field_size_x] = FIELD_CELL_TYPE_YELLOW_APPLE;
+    }
+}
+
+
 void clear_field(){
     for (int j = 0; j < field_size_y; j++) {
         for (int i = 0; i < field_size_x; i++) {
@@ -74,7 +89,7 @@ void clear_field(){
                 }
             }
             for (int j = 0; j < field_size_y - 1; j++) {
-                if (j<8 || field_size_y-j - 1 < 8 ){
+                if (j<5 || field_size_y-j - 1 < 5 ){
                     game_state.field[j][0]=FIELD_CELL_TYPE_WALL;
                     game_state.field[j][field_size_x - 1]=FIELD_CELL_TYPE_WALL;
                 }
@@ -104,12 +119,12 @@ void draw_field(sf::RenderWindow& window){
     none.setTexture(none_texture);
 
     sf::Texture apple_texture;
-    apple_texture.loadFromFile("images/apple4.png");
+    apple_texture.loadFromFile("images/apple.png");
     sf::Sprite apple;
     apple.setTexture(apple_texture);
 
     sf::Texture green_apple_texture;
-    green_apple_texture.loadFromFile("images/green_apple.png");
+    green_apple_texture.loadFromFile("images/apple_green.png");
     sf::Sprite green_apple;
     green_apple.setTexture(green_apple_texture);
 
@@ -129,9 +144,14 @@ void draw_field(sf::RenderWindow& window){
     wall.setTexture(wall_texture);
 
     sf::Texture heart_texture;
-    heart_texture.loadFromFile("images/heart.png");
+    heart_texture.loadFromFile("images/life.png");
     sf::Sprite heart;
     heart.setTexture(heart_texture);
+
+    sf::Texture yellow_apple_texture;
+    yellow_apple_texture.loadFromFile("images/yelow_apple.png");
+    sf::Sprite yellow_apple;
+    yellow_apple.setTexture(yellow_apple_texture);
 
     for (int j = 0; j < field_size_y; j++) {
         for (int i = 0; i < field_size_x; i++) {
@@ -156,6 +176,9 @@ void draw_field(sf::RenderWindow& window){
                     heart.setPosition(float(i * cell_size), float(j * cell_size));
                     window.draw(heart);
                     break;
+                case FIELD_CELL_TYPE_YELLOW_APPLE:
+                    yellow_apple.setPosition(float(i * cell_size), float(j * cell_size));
+                    window.draw(yellow_apple);
                 default:
                     if(game_state.field[j][i]==game_state.snake_length){
                         float offset_x=head.getLocalBounds().width/2;
@@ -182,6 +205,7 @@ void draw_field(sf::RenderWindow& window){
                     else{
                         snake.setPosition(float (i*cell_size), float(j*cell_size));
                         window.draw(snake);
+                        break;
                     }
             }
         }
@@ -327,6 +351,25 @@ void random_event(){
     }
 }
 
+void normal_game(){
+    event_green = false;
+    game_state.speed = game_state.speed_last;
+
+    if(length_increase){
+        length_increase = false;
+        game_state.snake_length -= 5;
+    }
+
+    if(score_decrease) {
+        game_state.score = game_state.last_score;
+        score_decrease = false;
+    }
+
+    invert_control = false;
+
+    x = r; y = g; z = b;
+}
+
 void update_window(sf::RenderWindow&window){
     if (lifes_color==0&&event_green){
         x=50; y=185; z=50;
@@ -371,6 +414,7 @@ void make_move() {
     if(game_state.field[game_state.snake_position_y][game_state.snake_position_x]!=FIELD_CELL_TYPE_NONE){
         switch (game_state.field[game_state.snake_position_y][game_state.snake_position_x]) {
             case FIELD_CELL_TYPE_APPLE:
+                game_state.last_score = game_state.score;
                 game_state.last_score++;
                 game_state.score++;
                 game_state.snake_length++;
@@ -385,6 +429,11 @@ void make_move() {
                 }
                 grow_snake();
                 add_apple();
+
+                if(game_state.score != 0 && game_state.score % 15 == 0){
+                    add_yellow_apple();
+                }
+
                 break;
             case FIELD_CELL_TYPE_GREEN_APPLE:
                 count_of_red_apples=0;
@@ -396,7 +445,11 @@ void make_move() {
                 game_over=true;
                 break;
             case FIELD_CELL_TYPE_HEART:
-
+                normal_game();
+                count_of_hearts++;
+                if(count_of_hearts == 5){
+                    game_state.count_of_lifes++;
+                }
                 break;
             default:
                 if (game_state.field[game_state.snake_position_y][game_state.snake_position_x]>1){
