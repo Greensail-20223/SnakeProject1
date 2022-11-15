@@ -179,6 +179,7 @@ void draw_field(sf::RenderWindow& window){
                 case FIELD_CELL_TYPE_YELLOW_APPLE:
                     yellow_apple.setPosition(float(i * cell_size), float(j * cell_size));
                     window.draw(yellow_apple);
+                    break;
                 default:
                     if(game_state.field[j][i]==game_state.snake_length){
                         float offset_x=head.getLocalBounds().width/2;
