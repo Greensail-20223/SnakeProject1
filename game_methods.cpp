@@ -371,6 +371,34 @@ void normal_game(){
     x = r; y = g; z = b;
 }
 
+int random_bonus(){
+    srand(time(nullptr));
+    int bonus=rand()%5;
+    switch ((bonus)) {
+        case 0:
+            game_state.score += 15;
+            break;
+        case 1:
+            return 1;
+        case 2:
+            game_state.speed = 130;
+            break;
+        case 3:
+            if (game_state.snake_length > 9) {
+                game_state.snake_length -= 5;
+            }
+            break;
+        case 4:
+            game_state.count_of_lifes +=5;
+            x=0; y=220; z=255;
+            event_yellow=true;
+            lifes_color=5;
+            break;
+
+
+    }
+}
+
 void update_window(sf::RenderWindow&window){
     if (lifes_color==0&&event_green){
         x=50; y=185; z=50;
@@ -443,7 +471,47 @@ void make_move() {
                 event_green = true;
                 break;
             case FIELD_CELL_TYPE_WALL:
-                game_over=true;
+                if (game_state.count_of_lifes !=0) {
+                    rall_back=true;
+                    if(event_yellow){
+                        lifes_color--;
+                        switch (lifes_color) {
+                            case 4:
+                                x = 255;
+                                y = 20;
+                                z = 147;
+                            case 3:
+                                x = 255;
+                                y = 140;
+                                z = 0;
+                                break;
+                            case 2:
+                                x = 109;
+                                y = 0;
+                                z = 139;
+                                break;
+                            case 1:
+                                x = 255;
+                                y = 215;
+                                z = 0;
+                                break;
+                            default:
+                                event_yellow = false;
+                                if (!event_green) {
+                                    x = r;
+                                    y = g;
+                                    z = b;
+                                } else {
+                                    x = 50;
+                                    y = 185;
+                                    z = 50;
+                                }
+                        }
+                    }
+                }
+                else{
+                    game_over=true;
+                }
                 break;
             case FIELD_CELL_TYPE_HEART:
                 normal_game();
@@ -452,9 +520,57 @@ void make_move() {
                     game_state.count_of_lifes++;
                 }
                 break;
+            case FIELD_CELL_TYPE_YELLOW_APPLE:
+                if (random_bonus()==1) {
+                    for (int m=0; m<2; m++){
+                        add_heart;
+                    }
+                }
+                break;
             default:
-                if (game_state.field[game_state.snake_position_y][game_state.snake_position_x]>1){
-                    game_over= true;
+                if(game_state.field[game_state.snake_position_y][game_state.snake_position_x]){
+                    if(game_state.count_of_lifes!=0){
+                rall_back=true;
+                if(event_yellow){
+                    lifes_color--;
+                    switch (lifes_color) {
+                        case 4:
+                            x = 255;
+                            y = 20;
+                            z = 147;
+                        case 3:
+                            x = 255;
+                            y = 140;
+                            z = 0;
+                            break;
+                        case 2:
+                            x = 109;
+                            y = 0;
+                            z = 139;
+                            break;
+                        case 1:
+                            x = 255;
+                            y = 215;
+                            z = 0;
+                            break;
+                        default:
+                            event_yellow = false;
+                            if (!event_green) {
+                                x = r;
+                                y = g;
+                                z = b;
+                            } else {
+                                x = 50;
+                                y = 185;
+                                z = 50;
+                            }
+                    }
+                }
+        }
+        else{
+            game_over=true;
+        }
+
                 }
                 break;
 
