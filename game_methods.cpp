@@ -81,6 +81,22 @@ void clear_field(){
     for (int i = 0; i < game_state.snake_length; i++)
         game_state.field[game_state.snake_position_y][game_state.snake_position_x - i] = game_state.snake_length - i;
     switch(game_level) {
+
+        case 0:
+            for (int i = 0; i < field_size_x; i++) {
+                if (i < 10 || field_size_x - i - 1 < 10) {
+                    game_state.field[0][i] = FIELD_CELL_TYPE_WALL;
+                    game_state.field[field_size_y - 1][i] = FIELD_CELL_TYPE_WALL;
+                }
+            }
+            for (int j = 0; j < field_size_y - 1; j++) {
+                if (j < 5 || field_size_y - j - 1 < 5) {
+                    game_state.field[j][0] = FIELD_CELL_TYPE_WALL;
+                    game_state.field[j][field_size_x - 1] = FIELD_CELL_TYPE_WALL;
+                }
+            }
+            break;
+
         case 1:
             for (int i = 0; i < field_size_x; i++) {
                 game_state.field[0][i] = FIELD_CELL_TYPE_WALL;
@@ -320,7 +336,7 @@ void draw_field(sf::RenderWindow& window){
     apple.setTexture(apple_texture);
 
     sf::Texture green_apple_texture;
-    green_apple_texture.loadFromFile("images/apple_green.png");
+    green_apple_texture.loadFromFile("images/green_apple.png");
     sf::Sprite green_apple;
     green_apple.setTexture(green_apple_texture);
 
@@ -340,12 +356,12 @@ void draw_field(sf::RenderWindow& window){
     wall.setTexture(wall_texture);
 
     sf::Texture heart_texture;
-    heart_texture.loadFromFile("images/life.png");
+    heart_texture.loadFromFile("images/heart.png");
     sf::Sprite heart;
     heart.setTexture(heart_texture);
 
     sf::Texture yellow_apple_texture;
-    yellow_apple_texture.loadFromFile("images/yelow_apple.png");
+    yellow_apple_texture.loadFromFile("images/yellow_apple.png");
     sf::Sprite yellow_apple;
     yellow_apple.setTexture(yellow_apple_texture);
 
